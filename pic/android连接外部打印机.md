@@ -32,3 +32,52 @@ PrintHelper类还提供了一些别的方法，
 * ```printBitmap(String jobName, Bitmap bitmap)```
 * ```printBitmap(String jobName, Uri imageFile)```
 
+### 打印网页
+
+````
+ //Create a WebView object specifically for printing
+        WebView webView = new WebView(this);
+        webView.setWebViewClient(new WebViewClient() {
+
+  public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return false;
+            }
+
+  @Override
+  public void onPageFinished(WebView view, String url) {
+                createWebPrintJob(view);
+                mWebView = null;
+            }
+        });
+
+/*        // Generate an HTML document on the fly:
+        String htmlDocument = "";
+        webView.loadDataWithBaseURL(null, htmlDocument, "text/HTML", "UTF-8", null);*/
+
+  webView.loadUrl("http://www.jandzy.com");
+
+  // Keep a reference to WebView object until you pass the PrintDocumentAdapter
+  // to the PrintManage
+  mWebView = webView;
+````
+
+````
+private void createWebPrintJob(WebView webView) {
+
+        // Get a PrintManager instance
+        PrintManager printManager = (PrintManager) this.getSystemService(Context.PRINT_SERVICE);
+
+        // Get a print adapter instance
+        PrintDocumentAdapter printAdapter = webView.createPrintDocumentAdapter();
+
+        // Create a print job with name and adapter instance
+        String jobName = getString(R.string.app_name) + " Document";
+        PrintJob printJob = printManager.print(jobName, printAdapter,
+                new PrintAttributes.Builder().build());
+
+        // Save the job object for later status checking
+      //  mPrintJobs.add(printJob);
+    }
+````
+
+
